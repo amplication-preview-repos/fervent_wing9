@@ -1,0 +1,94 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Customer {
+  address      String?
+  city         String?
+  country      String?
+  createdAt    DateTime @default(now())
+  email        String?
+  googleAuthId String?
+  id           String   @id @default(cuid())
+  name         String?
+  orders       Order[]
+  password     String?
+  phone        String?
+  updatedAt    DateTime @updatedAt
+}
+
+model Restaurant {
+  address   String?
+  city      String?
+  country   String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  menus     Menu[]
+  name      String?
+  phone     String?
+  siret     String?
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  createdAt    DateTime         @default(now())
+  customer     Customer?        @relation(fields: [customerId], references: [id])
+  customerId   String?
+  deliveries   Delivery[]
+  deliveryCode String?
+  id           String           @id @default(cuid())
+  menuItems    String?
+  orderNumber  String?
+  status       EnumOrderStatus?
+  totalPrice   Float?
+  updatedAt    DateTime         @updatedAt
+}
+
+model Menu {
+  availability Boolean?
+  createdAt    DateTime    @default(now())
+  description  String?
+  id           String      @id @default(cuid())
+  name         String?
+  price        Float?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId String?
+  updatedAt    DateTime    @updatedAt
+}
+
+model Delivery {
+  createdAt          DateTime            @default(now())
+  deliveryPersonName String?
+  id                 String              @id @default(cuid())
+  order              Order?              @relation(fields: [orderId], references: [id])
+  orderId            String?
+  phone              String?
+  status             EnumDeliveryStatus?
+  updatedAt          DateTime            @updatedAt
+  verificationCode   String?
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumOrderStatus {
+  Option1
+}
+
+enum EnumDeliveryStatus {
+  Option1
+}
